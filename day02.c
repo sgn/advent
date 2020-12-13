@@ -11,7 +11,9 @@ int main(int argc, char **argv)
 	char letter;
 	char buffer[BSIZE];
 	char *p;
+#ifdef PART_ONE
 	unsigned counter = 0;
+#endif
 	unsigned valid = 0;
 
 	buffer[BSIZE - 2] = 0;
@@ -32,7 +34,8 @@ int main(int argc, char **argv)
 		if (l <= counter && counter <= h)
 			valid++;
 #else
-		if (strlen(p) > h && (p[l] == letter ^ p[h] == letter))
+		if ((strlen(p) > h) &&
+		    ((p[l] == letter) ^ (p[h] == letter)))
 			valid++;
 #endif
 	}

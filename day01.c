@@ -6,7 +6,7 @@
 int main(int argc, char **argv)
 {
 	unsigned int value;
-	unsigned int m, n, p;
+	unsigned int m, n;
 	unsigned int offset;
 	char marker[YEAR + 1] = { 0 };
 

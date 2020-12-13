@@ -97,10 +97,10 @@ int main(int argc, char **argv)
 			else if (strcmp(key, "eyr") == 0)
 		       		parse_year(data, 2020, 2030, &eyr);
 			else if (strcmp(key, "hgt") == 0) {
-				if (data = validate_hgt(data))
+				if ((data = validate_hgt(data)))
 					hgt = data;
 			} else if (strcmp(key, "hcl") == 0) {
-				if (data = validate_hcl(data))
+				if ((data = validate_hcl(data)))
 					hcl = data;
 			} else if (strcmp(key, "ecl") == 0) {
 				if (is_ecl(data))

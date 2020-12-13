@@ -89,6 +89,8 @@ int yywrap() { return 1; }
 
 int main() {
 	unsigned ax, ay;
+	(void)(input);
+	(void)(yyunput);
 	yylex();
 	ax = x > 0 ? x : -x;
 	ay = y > 0 ? y : -y;

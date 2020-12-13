@@ -87,7 +87,6 @@ int starts_with(char *s, char *p)
 
 struct instruction *mkop(char *buffer) {
 	enum opcode opcode;
-	int data;
 	struct instruction *i;
 	if (starts_with(buffer, "acc"))
 		opcode = ACC;
@@ -121,7 +120,6 @@ int main(int argc, char **argv)
 	struct instruction root = { 0 };
 	struct instruction *tail = &root;
 	struct instruction *head = &root;
-	struct instruction *lasttail;
 
 	char buffer[32];
 	buffer[30] = 0;
@@ -137,7 +135,6 @@ int main(int argc, char **argv)
 	counter++;
 	while (tail && !tail->visited) {
 		tail->visited = counter;
-		lasttail = tail;
 		if (tail->opcode == JMP) {
 			tail = advance(tail, tail->data);
 		} else {
