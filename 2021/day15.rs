@@ -1,6 +1,11 @@
 use std::io;
 use std::io::Write;
 
+/*
+ * maybe better to reorganise to a graph
+ * and use Dijkstra
+ */
+
 fn process_up(map: &Vec::<Vec::<u8>>,
                 pathlen: &mut Vec::<Vec::<u32>>) -> bool {
     let h = map.len();
