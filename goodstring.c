@@ -21,11 +21,12 @@ char *findlargest(const char *input)
 	char *p, *out;
 	unsigned *block1, *block0;
 	size_t nb = 0;
-	size_t i, i0, i1;
+	size_t i, i0, i1, imax;
 	unsigned *lmax;
 	unsigned delta0 = 0;
 	unsigned delta1 = 0;
 	unsigned *tblock1, *tblock0;
+	size_t lb, la;
 
 	if (len <= strlen("10"))
 		return strndup(input, len);
@@ -46,43 +47,53 @@ char *findlargest(const char *input)
 	tblock0 = calloc(nb, sizeof(size_t));
 	tblock1 = calloc(nb, sizeof(size_t));
 
-	for (i = 0; i < nb - 1; i++) {
+	i = 0;
+	while (i < nb - 1) {
 		lmax = max_element(block1 + i, nb - i);
-		/* 101'110010|1111010000'010 */
-		for (i0 = lmax - block1; i0 < nb - 1; i0++) {
-			if (delta0 + block1[i0] >= block0[i0]) {
-				delta0 += (block1[i0] - block0[i0]);
-			} else {
-				delta0 = block0[i0] - delta0 - block1[i0];
-				break;
-			}
+		if (lmax == block1 + i) {
+			i++;
+			continue;
 		}
-		i0++;
+		imax = lmax - block1;
+		delta0 = delta1 = 0;
 		for (i1 = lmax - block1; i1 > i;) {
 			i1--;
 			if (delta1 + block0[i1] >= block1[i1]) {
 				delta1 += (block0[i1] - block1[i1]);
 			} else {
-				delta1 = block1[i1] - delta1 - block0[i1];
+				delta1 += block0[i1];
+				delta1 = block1[i1] - delta1;
 				break;
 			}
 		}
+		/* 111110.100001100100 */
+		if (block1[i1] < delta1) {
+			i++;
+			continue;
+		}
 		block1[i1] -= delta1;
-		block0[i0] -= delta0;
-		memcpy(tblock1, block1 + i1,
-		       (lmax - block1 - i1) * sizeof(unsigned));
-		memcpy(tblock0, block0 + i1,
-		       (lmax - block1 - i1) * sizeof(unsigned));
-		memmove(block1 + i1, lmax,
-			(block1 + i0 - lmax) * sizeof(unsigned));
-		memmove(block0 + i1, lmax,
-			(block1 + i0 - lmax) * sizeof(unsigned));
-		memcpy(block1 + i1 + (block1 + i0 - lmax), tblock1,
-		       (lmax - block1 - i1) * sizeof(unsigned));
-		memcpy(block0 + i1 + (block1 + i0 - lmax), tblock0,
-		       (lmax - block1 - i1) * sizeof(unsigned));
+		lb = imax - i1;
+		/* 101'110010|1111010000'010 */
+		for (i0 = lmax - block1; i0 < nb; i0++) {
+			if (delta0 + block1[i0] >= block0[i0]) {
+				delta0 += (block1[i0] - block0[i0]);
+			} else {
+				delta0 += block1[i0];
+				delta0 = block0[i0] - delta0;
+				i0++;
+				break;
+			}
+		}
+		block0[i0 - 1] -= delta0;
+		la = i0 - imax;
+		memcpy(tblock1, block1 + i1, lb * sizeof(unsigned));
+		memcpy(tblock0, block0 + i1, lb * sizeof(unsigned));
+		memmove(block1 + i1, block1 + imax, la * sizeof(unsigned));
+		memmove(block0 + i1, block0 + imax, la * sizeof(unsigned));
+		memcpy(block1 + i1 + la, tblock1, lb * sizeof(unsigned));
+		memcpy(block0 + i1 + la, tblock0, lb * sizeof(unsigned));
 		block1[i1] += delta1;
-		block0[i0] += delta0;
+		block0[i0 - 1] += delta0;
 	}
 	p = out = malloc(len + 1);
 	for (i = 0; i < nb; i++) {
